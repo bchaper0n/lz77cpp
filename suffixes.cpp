@@ -4,10 +4,10 @@
 #include <numeric>
 using namespace std;
 
-int isCapital(char x)
+bool isCapital(char x)
 {
-       if (x >= 'A' && x <= 'Z') return 1;
-       else return 0;
+       if (x >= 'A' && x <= 'Z') return true;
+       else return false;
 }
 
 bool isBefore(string s1, string s2){
