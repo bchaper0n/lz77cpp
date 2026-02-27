@@ -70,8 +70,6 @@ vector<string> quickSort(vector<string> v){
     vector<string> v1;
     vector<string> v2;
 
-    // cout << "\n";
-
     // compare each element with pivot, if earlier: put in v1, if later: put in v1
     for (int i = 0; i < s; i++){
         if (i != pivi){ // if pivot ignore
@@ -83,18 +81,6 @@ vector<string> quickSort(vector<string> v){
             }
         }
     }
-
-    // cout << "out" << "\n";
-
-    // cout << "v1: ";
-    // for (int i = 0; i < v1.size(); i++){
-    //     cout << v1[i] + " ";
-    // }
-    // cout << "\n" << "v2: ";
-    // for (int i = 0; i < v2.size(); i++){
-    //     cout << v2[i] + " ";
-    // }
-    // cout << "\n";
 
     // recursively sort both arrays then combine them + pivot
     if (!v1.empty()){
@@ -217,6 +203,7 @@ int main(){
         cout << suffixes[i] + " ";
     }
     cout << "\n";
+
     //testOrdering();
     //testSorting();
 
@@ -226,8 +213,13 @@ int main(){
     for (int i = 0; i < alphaed.size(); i++){
         cout << alphaed[i] << " ";
     }
+    cout << "\n";
 
     // TODO: create vector of starting positions of every suffix
+    for (int i = 0; i < alphaed.size(); i++){
+        suffixArray.push_back(len - alphaed[i].length());
+        cout << suffixArray.back() << " ";
+    }
 
     return 0;
 }
