@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 using namespace std;
 
 
@@ -9,7 +9,7 @@ string encodeStr(string inputText){
 
     int inputLen = inputText.length();
     int maxWindowSize = 5;
-    map<string, int> dict;
+    unordered_map<string, int> dict;
 
     int currWindowBegin = 0;
     int currWindowLen = 1;
@@ -52,7 +52,7 @@ string encodeStr(string inputText){
 string decodeStr(string encodedText){
     
     int inputLen = encodedText.length();
-    map<int, string> dict;
+    unordered_map<int, string> dict;
 
     // set first char to have non-empty dictionary
     string first = encodedText.substr(0, 1);
