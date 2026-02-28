@@ -23,7 +23,7 @@ string encodeStr(string inputText){
     currWindowBegin++;
 
     // traverse string and convert repeatable sequences to pos of first instance
-    while (currWindowBegin + currWindowLen < inputLen + 1){
+    while (currWindowBegin + currWindowLen <= inputLen){
         string curr = inputText.substr(currWindowBegin, currWindowLen);
         int currPos = dict[curr];
 
@@ -41,7 +41,11 @@ string encodeStr(string inputText){
             currWindowBegin = currWindowBegin + currWindowLen;
             currWindowLen = 1;
         }
-        else { // if sequence in dict, check if its also in dict when combined with next char
+        else { // if sequence in dict, add next char and repeat
+            // edge case for when at end of string
+            if (currWindowBegin + currWindowLen == inputLen){
+                outputText += to_string(currPos);
+            }
             currWindowLen++;
         }
     }
@@ -66,9 +70,8 @@ string decodeStr(string encodedText){
         if (isdigit(c)){
             int d = c - '0';
             string val = dict[d];
-            string l = to_string(c) + encodedText[i+1];
-            string newStr = val + encodedText[i+1];
-            // cout << "new str = " << l << " or " << newStr << ": " << i + 1 << "\n";
+            // get literal after unless last char
+            string newStr = (i == inputLen - 1) ? val : val + encodedText[i+1];
             decodedText += newStr;
             dict[i + 1] = newStr;
             i++;
@@ -83,7 +86,7 @@ string decodeStr(string encodedText){
 
 int main(){
 
-    string inputText = "AABABBABBAABA";
+    string inputText = "AABABBABBAABAAC";
     string encodedText = encodeStr(inputText);
 
     cout << "in str:  " << inputText << "\n";
@@ -92,7 +95,7 @@ int main(){
     string decodedText = decodeStr(encodedText);
 
     cout << "dec str: " << decodedText << "\n";
-    cout << (inputText == decodedText);
+    cout << "match? " << ((inputText == decodedText) ? "yes" : "no");
     
     return 0;
 }
