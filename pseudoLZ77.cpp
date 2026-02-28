@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 using namespace std;
 
 
-string encodeStr (string inputText){
+string encodeStr(string inputText){
 
     int inputLen = inputText.length();
-    int windowSize = 5;
+    int maxWindowSize = 5;
     map<string, int> dict;
 
     int currWindowBegin = 0;
@@ -48,13 +49,49 @@ string encodeStr (string inputText){
     return outputText;
 }
 
-int main (){
+string decodeStr(string encodedText){
+    
+    int inputLen = encodedText.length();
+    map<int, string> dict;
+
+    // set first char to have non-empty dictionary
+    string first = encodedText.substr(0, 1);
+    dict[1] = first;
+
+    // add first char to output
+    string decodedText = first;
+    
+    for (int i = 1; i < inputLen; i++){
+        char c = encodedText[i];
+        if (isdigit(c)){
+            int d = c - '0';
+            string val = dict[d];
+            string l = to_string(c) + encodedText[i+1];
+            string newStr = val + encodedText[i+1];
+            // cout << "new str = " << l << " or " << newStr << ": " << i + 1 << "\n";
+            decodedText += newStr;
+            dict[i + 1] = newStr;
+            i++;
+        }
+        else {
+            decodedText += c;
+        }
+    }
+
+    return decodedText;
+}
+
+int main(){
 
     string inputText = "AABABBABBAABA";
-    string outputText = encodeStr(inputText);
+    string encodedText = encodeStr(inputText);
 
     cout << "in str:  " << inputText << "\n";
-    cout << "out str: " << outputText;
+    cout << "enc str: " << encodedText << "\n";
+
+    string decodedText = decodeStr(encodedText);
+
+    cout << "dec str: " << decodedText;
     
     return 0;
 }
