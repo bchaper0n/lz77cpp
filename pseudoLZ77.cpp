@@ -86,12 +86,14 @@ string decodeStr(string encodedText){
 
 int main(){
 
-    string inputText = "AABABBABBAABAAC";
+    // TODO: account for space? maybe fixing decoder will solve this
+    string inputText = "BABABBABBABA"; // AABABBABBABA, A B AB ABB
     string encodedText = encodeStr(inputText);
 
     cout << "in str:  " << inputText << "\n";
     cout << "enc str: " << encodedText << "\n";
 
+    // TODO: account for decoder needing pos and char in both directions
     string decodedText = decodeStr(encodedText);
 
     cout << "dec str: " << decodedText << "\n";
