@@ -91,7 +91,8 @@ int main(){
 
     string decodedText = decodeStr(encodedText);
 
-    cout << "dec str: " << decodedText;
+    cout << "dec str: " << decodedText << "\n";
+    cout << (inputText == decodedText);
     
     return 0;
 }
