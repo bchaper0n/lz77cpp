@@ -5,17 +5,18 @@
 using namespace std;
 
 // Hoffman node
+//template <typename T> TODO: make chunk generic between char or string
 struct HoffmanNode {
-        char ch;
+        
+        char chunk; // possibility for chunk to be char or string 
         float weight;
         HoffmanNode* leftChild;
         HoffmanNode* rightChild;
 
         HoffmanNode (char c, float w) {
-            ch = c;
+            chunk = c;
             weight = w;
-            leftChild = nullptr;
-            rightChild = nullptr;
+            leftChild = rightChild = nullptr;
         }
 
         HoffmanNode (float w, HoffmanNode l, HoffmanNode r) {
@@ -26,6 +27,7 @@ struct HoffmanNode {
 };
 
 // Hoffman code based on string
+//template <typename T>
 class HoffmanTree {
     private:
         string str;
@@ -74,12 +76,12 @@ class HoffmanTree {
             return v1;
         }
 
-        void calcWeights(){
+        vector<HoffmanNode> calcWeights(string s){
 
             unordered_map<char, int> freqs;
             vector<HoffmanNode> ws;
 
-            for (char c: str){
+            for (char c: s){
                 if (freqs[c] == 0){
                     freqs[c] = 1;
                 } 
@@ -88,15 +90,16 @@ class HoffmanTree {
                 }
             }
 
-            int len = str.length();
+            int len = s.length();
 
             for (auto c : freqs){
-                cout << c.first << ": " << c.second << "\n";
-                HoffmanNode ht (c.first, (float) c.second / (float) len);
+                float weight = (float) c.second / (float) len;
+                cout << c.first << ": " << c.second << ", " << weight << "\n";
+                HoffmanNode ht (c.first, weight);
                 ws.push_back(ht);
             }
 
-            weights = orderByWeight(ws);
+            return orderByWeight(ws); //
         }
 
         void buildTree(){
@@ -117,7 +120,7 @@ class HoffmanTree {
                 
                 // push node in vector with right order by weight
                 ws.push_back(hn);
-                weights = orderByWeight(ws);
+                ws = orderByWeight(ws);
                 
                 // for (int i = ws.size() - 1; i >= 0; i--){
                 //     if (combWeight <= ws[i].weight){
@@ -132,12 +135,37 @@ class HoffmanTree {
             root = &ws.front();
         }
 
+        // traverse tree
+        unordered_map<char, string> traverseTree(HoffmanNode node, string currSequence){
+            
+            unordered_map<char, string> left;
+            unordered_map<char, string> right;
+
+            // check if leaf
+            if (node.leftChild != nullptr && node.rightChild != nullptr){
+                return {{node.chunk, currSequence}};
+            }
+
+            // check left
+            if (node.leftChild != nullptr){
+                left = traverseTree(*node.leftChild, currSequence + "0");
+            }
+            // check right
+            if (node.rightChild != nullptr){
+                right = traverseTree(*node.rightChild, currSequence + "1");
+            }
+
+            // combine
+            left.insert(right.begin(), right.end());
+            return left;
+        }
+
     public:
         HoffmanTree (string s) {
             str = s;
             root = nullptr;
-            calcWeights();
-            buildTree();
+            weights = calcWeights(s); // calculate weight for every chunk
+            //buildTree(); // build hoffman tree based on these weights
         }
 
         vector<HoffmanNode> getWeights(){
@@ -146,6 +174,14 @@ class HoffmanTree {
 
         HoffmanNode* getRoot(){
             return root;
+        }
+
+        unordered_map<char, string> getCoding(){
+            unordered_map<char, string> codes;
+
+            codes = traverseTree(*root, "");
+
+            return codes;
         }
 };
 
@@ -156,16 +192,15 @@ int main(){
     // build hoffman tree
     // get codes for each char
 
-    HoffmanTree ht("abcaaabvcabcb");
+    HoffmanTree ht("aabc");
 
     vector<HoffmanNode> ws = ht.getWeights();
-    HoffmanNode* root = ht.getRoot();
 
-    cout << "root: " << &root << ".";
+    cout << "\nreceived weights\n";
 
-    // for (auto c : ws){
-    //     cout << c.ch << ": " << c.weight << "\n";
-    // }
+    for (HoffmanNode w : ws){
+        cout << w.chunk << ": " << w.weight << "\n"; 
+    }
 
     return 0;
 }
