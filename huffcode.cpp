@@ -4,37 +4,93 @@
 #include <vector>
 using namespace std;
 
-// Hoffman node
+// Huffman node
 //template <typename T> TODO: make chunk generic between char or string
-struct HoffmanNode {
+struct HuffmanNode {
         
-        char chunk; // possibility for chunk to be char or string 
+        char chunk;
         float weight;
-        HoffmanNode* leftChild;
-        HoffmanNode* rightChild;
+        bool isComplex;
+        HuffmanNode* leftChild;
+        HuffmanNode* rightChild;
 
-        HoffmanNode (char c, float w) {
+        HuffmanNode (const HuffmanNode &hn) {
+            chunk = hn.chunk;
+            weight = hn.weight;
+            isComplex = hn.isComplex;
+            leftChild = hn.leftChild;
+            rightChild = hn.rightChild;
+        }
+
+        HuffmanNode (char c, float w) {
             chunk = c;
             weight = w;
+            isComplex = false;
             leftChild = rightChild = nullptr;
         }
 
-        HoffmanNode (float w, HoffmanNode l, HoffmanNode r) {
+        HuffmanNode (float w, HuffmanNode* l, HuffmanNode* r) {
             weight = w;
-            leftChild = &l;
-            rightChild = &r;
+            isComplex = true;
+            leftChild = l;
+            rightChild = r;
+        }
+
+        void printNode(){
+
+            std::string nodeInfo = "chunk = c: ";
+            std::string childrenInfo = "";
+
+            // check if parent node or leaf char node
+            if (isComplex){
+                nodeInfo += "NULL";
+            }
+            else {
+                nodeInfo.append(1, chunk);
+            }
+            nodeInfo += ", w: " + to_string(weight) + "\n";
+            
+            // check if leaf
+            if (leftChild == nullptr && rightChild == nullptr){
+                childrenInfo += "leaf (no children)\n";
+            }
+            else {
+                if (leftChild != nullptr){
+                    childrenInfo += " - left child = c: ";
+                    if (leftChild->isComplex){
+                        childrenInfo += "NULL";
+                    }
+                    else {
+                        childrenInfo.append(1, leftChild->chunk);
+                    }
+                    childrenInfo += ", w: " + to_string(leftChild->weight) + "\n";
+                }
+                
+                if (rightChild != nullptr){
+                    childrenInfo += " - right child = c: ";
+                    if (rightChild->isComplex){
+                        childrenInfo += "NULL";
+                    }
+                    else {
+                        childrenInfo.append(1, rightChild->chunk);
+                    }
+                    childrenInfo += ", w: " + to_string(rightChild->weight) + "\n";
+                }
+            }
+            
+            cout << nodeInfo << childrenInfo << "\n";
         }
 };
 
-// Hoffman code based on string
+// Huffman code based on string
 //template <typename T>
-class HoffmanTree {
+class HuffmanTree {
     private:
         string str;
-        vector<HoffmanNode> weights;
-        HoffmanNode* root;
+        vector<HuffmanNode> weights;
+        HuffmanNode* root;
 
-        vector<HoffmanNode> orderByWeight(vector<HoffmanNode> ws){ // using quick sort
+        vector<HuffmanNode> orderByWeight(vector<HuffmanNode> ws){ // using quick sort
             int s = ws.size();
 
             // check if base case
@@ -44,11 +100,11 @@ class HoffmanTree {
 
             // set pivot to middle element
             const int pivi = s / 2;
-            HoffmanNode pivot = ws[pivi];
+            HuffmanNode pivot = ws[pivi];
 
             // create vectors for earlier and later elements
-            vector<HoffmanNode> v1;
-            vector<HoffmanNode> v2;
+            vector<HuffmanNode> v1;
+            vector<HuffmanNode> v2;
 
             // compare each element with pivot, if earlier: put in v1, if later: put in v1
             for (int i = 0; i < s; i++){
@@ -76,10 +132,10 @@ class HoffmanTree {
             return v1;
         }
 
-        vector<HoffmanNode> calcWeights(string s){
+        vector<HuffmanNode> calcWeights(string s){
 
             unordered_map<char, int> freqs;
-            vector<HoffmanNode> ws;
+            vector<HuffmanNode> ws;
 
             for (char c: s){
                 if (freqs[c] == 0){
@@ -94,94 +150,23 @@ class HoffmanTree {
 
             for (auto c : freqs){
                 float weight = (float) c.second / (float) len;
-                cout << c.first << ": " << c.second << ", " << weight << "\n";
-                HoffmanNode ht (c.first, weight);
+                // cout << c.first << ": " << c.second << ", " << weight << "\n";
+                HuffmanNode ht (c.first, weight);
                 ws.push_back(ht);
             }
 
             return orderByWeight(ws); //
         }
 
-        void buildTree(){
-            vector<HoffmanNode> ws = weights;
-
-            // check if size 1, single element is root of tree
-            while (ws.size() != 1){
-
-                // pop last 2 (with smallest weights)
-                HoffmanNode left = ws.back();
-                ws.pop_back();
-                HoffmanNode right = ws.back();
-                ws.pop_back();
-
-                // create new node with both as children
-                float combWeight = left.weight + right.weight;
-                HoffmanNode hn (combWeight, left, right);
-                
-                // push node in vector with right order by weight
-                ws.push_back(hn);
-                ws = orderByWeight(ws);
-                
-                // for (int i = ws.size() - 1; i >= 0; i--){
-                //     if (combWeight <= ws[i].weight){
-                //         //ws.insert(i, hn);
-                //         ws.push_back(hn);
-                //         break;
-                //     }
-                // }
-
-            }
-
-            root = &ws.front();
-        }
-
-        // traverse tree
-        unordered_map<char, string> traverseTree(HoffmanNode node, string currSequence){
-            
-            unordered_map<char, string> left;
-            unordered_map<char, string> right;
-
-            // check if leaf
-            if (node.leftChild != nullptr && node.rightChild != nullptr){
-                return {{node.chunk, currSequence}};
-            }
-
-            // check left
-            if (node.leftChild != nullptr){
-                left = traverseTree(*node.leftChild, currSequence + "0");
-            }
-            // check right
-            if (node.rightChild != nullptr){
-                right = traverseTree(*node.rightChild, currSequence + "1");
-            }
-
-            // combine
-            left.insert(right.begin(), right.end());
-            return left;
-        }
-
     public:
-        HoffmanTree (string s) {
+        HuffmanTree (string s) {
             str = s;
             root = nullptr;
             weights = calcWeights(s); // calculate weight for every chunk
-            //buildTree(); // build hoffman tree based on these weights
         }
 
-        vector<HoffmanNode> getWeights(){
+        vector<HuffmanNode> getWeights(){
             return weights;
-        }
-
-        HoffmanNode* getRoot(){
-            return root;
-        }
-
-        unordered_map<char, string> getCoding(){
-            unordered_map<char, string> codes;
-
-            codes = traverseTree(*root, "");
-
-            return codes;
         }
 };
 
@@ -189,18 +174,11 @@ class HoffmanTree {
 
 int main(){
     // get freqs of each character, calc weights
-    // build hoffman tree
+    // build huffman tree
     // get codes for each char
 
-    HoffmanTree ht("aabc");
-
-    vector<HoffmanNode> ws = ht.getWeights();
-
-    cout << "\nreceived weights\n";
-
-    for (HoffmanNode w : ws){
-        cout << w.chunk << ": " << w.weight << "\n"; 
-    }
+    HuffmanTree* ht = new HuffmanTree ("ab");
+    vector<HuffmanNode> ws = ht->getWeights();
 
     return 0;
 }
