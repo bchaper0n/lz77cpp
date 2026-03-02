@@ -29,11 +29,11 @@ struct HuffmanNode {
             leftChild = rightChild = nullptr;
         }
 
-        HuffmanNode (float w, HuffmanNode* l, HuffmanNode* r) {
+        HuffmanNode (float w, HuffmanNode &l, HuffmanNode &r) {
             weight = w;
             isComplex = true;
-            leftChild = l;
-            rightChild = r;
+            leftChild = &l;
+            rightChild = &r;
         }
 
         void printNode(){
@@ -48,7 +48,7 @@ struct HuffmanNode {
             else {
                 nodeInfo.append(1, chunk);
             }
-            nodeInfo += ", w: " + to_string(weight) + "\n";
+            nodeInfo += ", w: " + std::to_string(weight) + "\n";
             
             // check if leaf
             if (leftChild == nullptr && rightChild == nullptr){
@@ -63,7 +63,7 @@ struct HuffmanNode {
                     else {
                         childrenInfo.append(1, leftChild->chunk);
                     }
-                    childrenInfo += ", w: " + to_string(leftChild->weight) + "\n";
+                    childrenInfo += ", w: " + std::to_string(leftChild->weight) + "\n";
                 }
                 
                 if (rightChild != nullptr){
@@ -74,7 +74,7 @@ struct HuffmanNode {
                     else {
                         childrenInfo.append(1, rightChild->chunk);
                     }
-                    childrenInfo += ", w: " + to_string(rightChild->weight) + "\n";
+                    childrenInfo += ", w: " + std::to_string(rightChild->weight) + "\n";
                 }
             }
             
@@ -86,11 +86,11 @@ struct HuffmanNode {
 //template <typename T>
 class HuffmanTree {
     private:
-        string str;
+        std::string str;
         vector<HuffmanNode> weights;
         HuffmanNode* root;
 
-        vector<HuffmanNode> orderByWeight(vector<HuffmanNode> ws){ // using quick sort
+        vector<HuffmanNode> orderByWeight(vector<HuffmanNode> &ws){ // using quick sort
             int s = ws.size();
 
             // check if base case
@@ -132,7 +132,7 @@ class HuffmanTree {
             return v1;
         }
 
-        vector<HuffmanNode> calcWeights(string s){
+        vector<HuffmanNode> calcWeights(std::string s){
 
             unordered_map<char, int> freqs;
             vector<HuffmanNode> ws;
@@ -159,7 +159,7 @@ class HuffmanTree {
         }
 
     public:
-        HuffmanTree (string s) {
+        HuffmanTree (std::string s) {
             str = s;
             root = nullptr;
             weights = calcWeights(s); // calculate weight for every chunk
