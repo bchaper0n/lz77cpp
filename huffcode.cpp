@@ -13,12 +13,14 @@ struct HuffmanNode {
         HuffmanNode* leftChild;
         HuffmanNode* rightChild;
 
+        // cto for character/weights (leafs)
         HuffmanNode (char c, float w) {
             chunk = c;
             weight = w;
             leftChild = rightChild = nullptr;
         }
 
+        // cto for intermediate/complex nodes
         HuffmanNode (float w, HuffmanNode* left, HuffmanNode* right) {
             chunk = char(0);
             weight = w;
@@ -26,6 +28,7 @@ struct HuffmanNode {
             rightChild = right;
         }
 
+        // print node and its children
         void printNode(){
 
             std::string nodeInfo = "chunk = c: ";
@@ -81,6 +84,7 @@ class HuffmanTree {
         HuffmanNode* root;
         unordered_map<char, std::string> codes;
 
+        // order char frequency by weight (desc)
         vector<HuffmanNode*> orderByWeight(vector<HuffmanNode*> ws){ // using quick sort
             int wsSize = ws.size();
 
@@ -93,11 +97,11 @@ class HuffmanTree {
             const int pivi = ws.size() / 2;
             HuffmanNode* pivot = ws[pivi];
 
-            // create vectors for earlier and later elements
+            // create vectors for lower and higher freq elements, respectively
             vector<HuffmanNode*> v1;
             vector<HuffmanNode*> v2;
 
-            // compare each element with pivot, if earlier: put in v1, if later: put in v1
+            // compare each element with pivot, if lower freq: put in v1, if higher: put in v1
             for (int i = 0; i < ws.size(); i++){
                 if (i != pivi){ // if pivot ignore
                     if (ws[i]->weight >= pivot->weight){
@@ -123,6 +127,7 @@ class HuffmanTree {
             return v1;
         }
 
+        // calculate weights for freq of each char
         vector<HuffmanNode*> calcWeights(std::string s){
 
             unordered_map<char, int> freqs;
@@ -148,6 +153,7 @@ class HuffmanTree {
             return orderByWeight(ws); //
         }
 
+        // build huffman tree using weights of each char
         void buildTree(){
             std::vector<HuffmanNode*> ws = weights;
 
@@ -166,13 +172,13 @@ class HuffmanTree {
                 
                 // push node in vector with right order by weight
                 ws.push_back(hn);
-                ws = orderByWeight(ws);
+                ws = orderByWeight(ws); // TODO: inefficient, just insert at right spot
             }
 
             root = ws[0];
         }
 
-        // traverse tree
+        // traverse tree by building string for each char leaf
         unordered_map<char, std::string> traverseTree(HuffmanNode* node, std::string currSequence){
             
             unordered_map<char, std::string> left;
@@ -197,11 +203,13 @@ class HuffmanTree {
             return left;
         }
 
+        // build huffman codes for each leaf
         void buildCode(){
             codes = traverseTree(root, "");
         }
 
     public:
+        // cto
         HuffmanTree (std::string s) {
             str = s;
             root = nullptr;
@@ -210,10 +218,12 @@ class HuffmanTree {
             buildCode(); // build code map for each character
         }
 
+        // get weights for each char in string
         vector<HuffmanNode*> getWeights(){
             return weights;
         }
 
+        // get code for each char in string
         unordered_map<char, std::string> getCodes(){
             return codes;
         }
